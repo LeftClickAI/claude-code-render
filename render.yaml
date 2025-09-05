@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: claude-code
+    env: docker
+    plan: starter          # bump as needed
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: ANTHROPIC_API_KEY              # set in Render dashboard
+        sync: false
+      - key: PASSWORD                       # code-server login
+        sync: false
+    disk:
+      name: cc-data
+      mountPath: /data
+      sizeGB: 10
