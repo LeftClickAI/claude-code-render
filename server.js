@@ -47,11 +47,12 @@ app.post("/run", (req, res) => {
   }
 
   // Build args for Claude Code
-  // --json returns structured output when possible
-  const args = ["--headless", "--json", "--cwd", cwd, prompt];
+  // Simply pass the prompt directly
+  const args = [prompt];
 
   // Execute `claude` (installed globally in PATH)
-  execFile("claude", args, { timeout: timeoutMs }, (err, stdout, stderr) => {
+  // Set cwd as the working directory for the command
+  execFile("claude", args, { timeout: timeoutMs, cwd: cwd }, (err, stdout, stderr) => {
     if (err) {
       return res.status(500).json({
         error: err.message,
