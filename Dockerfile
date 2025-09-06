@@ -1,23 +1,24 @@
-FROM codercom/code-server:4.98.0-debian
+FROM node:20-slim
 
-USER root
-RUN apt-get update && apt-get install -y curl ca-certificates git && rm -rf /var/lib/apt/lists/*
+# OS deps
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    git bash curl ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
 
-# Persist global npm & user data on the Render disk
-ENV NPM_CONFIG_PREFIX=/data/.npm-global
-ENV PATH=/data/.npm-global/bin:$PATH
-RUN mkdir -p /data/.npm-global /workspace
+# Global npm dir (so PATH finds global bins like `claude`)
+ENV NPM_CONFIG_PREFIX=/opt/npm-global
+ENV PATH=/opt/npm-global/bin:$PATH
 
 # Install Claude Code CLI
-RUN npm install -g @anthropic-ai/claude-code
+RUN npm i -g @anthropic-ai/claude-code
 
-# Minimal static landing for healthcheck
-RUN echo 'ok' >/workspace/index.html
+# App deps
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
 
-# Entrypoint: start code-server bound to 0.0.0.0:8080, storing state on /data
-COPY entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# App code
+COPY server.js ./
+
 EXPOSE 8080
-USER coder
-WORKDIR /workspace
-CMD ["/usr/local/bin/entrypoint.sh"]
+CMD ["node", "server.js"]

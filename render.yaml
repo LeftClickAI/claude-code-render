@@ -1,16 +1,16 @@
 services:
   - type: web
-    name: claude-code
+    name: claude-code-headless
     env: docker
-    plan: starter          # bump as needed
+    plan: standard                 # Upgrade to 2 vCPU / 4 GB if you run many/long tasks
     autoDeploy: true
     healthCheckPath: /
     envVars:
-      - key: ANTHROPIC_API_KEY              # set in Render dashboard
+      - key: ANTHROPIC_API_KEY     # set in Render Dashboard
         sync: false
-      - key: PASSWORD                       # code-server login
+      - key: AUTH_TOKEN            # your custom API token (used by x-auth-token header)
         sync: false
     disk:
-      name: cc-data
-      mountPath: /data
+      name: workspace
+      mountPath: /workspace        # persistent working dir for repos/files
       sizeGB: 10
