@@ -14,8 +14,8 @@ RUN npm i -g @anthropic-ai/claude-code
 
 # App deps
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
+COPY package.json ./
+RUN npm install --omit=dev
 
 # App code
 COPY server.js ./
