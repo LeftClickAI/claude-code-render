@@ -5,6 +5,9 @@ import { existsSync, mkdirSync } from "node:fs";
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
+// Trust proxy headers (required for Render's load balancer)
+app.set("trust proxy", 1);
+
 // --- Health check (no auth required) ---
 app.get("/", (_, res) => res.status(200).send("ok"));
 
