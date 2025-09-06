@@ -5,8 +5,16 @@ import { existsSync, mkdirSync } from "node:fs";
 const app = express();
 app.use(express.json({ limit: "1mb" }));
 
+// --- Health check (no auth required) ---
+app.get("/", (_, res) => res.status(200).send("ok"));
+
 // --- Security: simple token auth via x-auth-token ---
 app.use((req, res, next) => {
+  // Skip auth for health check
+  if (req.path === "/" && req.method === "GET") {
+    return next();
+  }
+  
   const token = req.headers["x-auth-token"];
   if (!token || token !== process.env.AUTH_TOKEN) {
     return res.status(401).json({ error: "Unauthorized" });
@@ -25,8 +33,6 @@ app.use(
   })
 );
 
-// --- Health check ---
-app.get("/", (_, res) => res.status(200).send("ok"));
 
 // --- Headless runner ---
 app.post("/run", (req, res) => {
