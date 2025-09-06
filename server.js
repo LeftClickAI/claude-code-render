@@ -47,8 +47,8 @@ app.post("/run", (req, res) => {
   }
 
   // Build args for Claude Code
-  // Simply pass the prompt directly
-  const args = [prompt];
+  // Use -p flag for non-interactive mode
+  const args = ["-p", prompt];
 
   // Execute `claude` (installed globally in PATH)
   // Set cwd as the working directory for the command
